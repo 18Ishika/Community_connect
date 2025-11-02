@@ -1,0 +1,73 @@
+{% extends "base.html" %}
+
+{% block title %}My Wishlist - KalaMitra{% endblock %}
+
+{% block content %}
+<div class="container main-content">
+    <div class="row mb-4">
+        <div class="col-md-12">
+            <h2 class="page-title">❤️ My Wishlist</h2>
+            <p class="text-muted">Your favorite products from talented artisans</p>
+        </div>
+    </div>
+
+    {% if wishlist_products %}
+    <div class="row g-4">
+        {% for product in wishlist_products %}
+        <div class="col-md-6 col-lg-4">
+            <div class="card h-100 shadow-sm">
+                <img src="{{ product.image_url or 'https://via.placeholder.com/300x200?text=No+Image' }}" 
+                     class="card-img-top" alt="{{ product.name }}" 
+                     style="height: 200px; object-fit: cover;">
+                <div class="card-body d-flex flex-column">
+                    <h5 class="card-title">{{ product.name }}</h5>
+                    <p class="card-text flex-grow-1">
+                        <small>{{ product.description[:100] }}{% if product.description|length > 100 %}...{% endif %}</small>
+                    </p>
+                    <p class="text-primary fw-bold mb-2">₹{{ "%.2f"|format(product.price) }}</p>
+                    <p class="text-muted mb-2"><small><strong>Category:</strong> {{ product.category }}</small></p>
+                    <p class="text-secondary mb-3">
+                        <small>
+                            <strong>By:</strong> 
+                            <a href="{{ url_for('view_artisan_profile', artisan_id=product.artisan.id) }}" 
+                               class="text-decoration-none">
+                                {{ product.artisan.name }}
+                            </a>
+                        </small>
+                    </p>
+                    <div class="d-flex gap-2">
+                        <a href="{{ url_for('view_artisan_profile', artisan_id=product.artisan.id) }}" 
+                           class="btn btn-primary-custom btn-sm flex-grow-1">View Details</a>
+                        <a href="{{ url_for('remove_from_wishlist', product_id=product.id) }}" 
+                           class="btn btn-danger btn-sm"
+                           onclick="return confirm('Remove this product from your wishlist?')">
+                            💔
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div class="row">
+        <div class="col-md-8 mx-auto">
+            <div class="card shadow text-center py-5">
+                <div class="card-body">
+                    <div class="mb-4">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="80" height="80" fill="#d18f6e" viewBox="0 0 16 16">
+                            <path fill-rule="evenodd" d="M8 1.314C12.438-3.248 23.534 4.735 8 15-7.534 4.736 3.562-3.248 8 1.314z"/>
+                        </svg>
+                    </div>
+                    <h4 class="mb-3">Your wishlist is empty</h4>
+                    <p class="text-muted mb-4">Start exploring and add products you love!</p>
+                    <a href="{{ url_for('index') }}" class="btn btn-primary-custom">
+                        Browse Artisans
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

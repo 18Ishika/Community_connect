@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container main-content">
+    <div class="text-center mb-5">
+        <h1 class="page-title fw-bold">Discover Amazing Artisans</h1>
+        <p class="page-subtitle">Celebrating handmade crafts from talented local creators</p>
+    </div>
+
+    <div class="row g-4">
+        {% for artisan in artisans %}
+        <div class="col-md-6 col-lg-4">
+            <a href="{{ url_for('view_artisan_profile', artisan_id=artisan.id) }}" class="text-decoration-none text-dark">
+                <div class="card h-100 shadow-sm">
+                    <img src="{{ artisan.image_url or 'https://via.placeholder.com/300x200?text=No+Image' }}" 
+                        class="card-img-top" 
+                        alt="{{ artisan.name or 'No name' }}" 
+                        style="height: 200px; object-fit: cover;">
+                    <div class="card-body">
+                        <h5 class="card-title text-primary">{{ artisan.name or '—' }}</h5>
+                        <p class="text-secondary mb-1"><strong>Craft:</strong> {{ artisan.craft_type or '—' }}</p>
+                        <p class="text-muted mb-1"><strong>Location:</strong> {{ artisan.location or '—' }}</p>
+                        <p class="card-text"><small>{{ artisan.bio[:100] or '' }}{% if artisan.bio and artisan.bio|length > 100 %}...{% endif %}</small></p>
+                        <div class="d-flex justify-content-between align-items-center mt-3">
+                            <span class="text-warning"><strong>★ {{ "%.1f"|format(artisan.rating) }}/5</strong></span>
+                            <small class="text-muted">{{ artisan.contact or '—' }}</small>
+                        </div>
+                    </div>
+                </div>
+            </a>
+        </div>
+        {% endfor %}
+    </div>
+
+    {% if not artisans %}
+    <div class="text-center mt-5">
+        <div class="card mx-auto" style="max-width: 400px;">
+            <div class="card-body">
+                <h5 class="text-muted">No artisan data found</h5>
+                <p class="text-muted">Start by creating your first artisan profile!</p>
+                <a href="{{ url_for('new_artisan') }}" class="btn btn-create">+ Add First Artisan</a>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

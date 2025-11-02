@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+
+{% block title %}Artisan Login - KalaMitra{% endblock %}
+
+{% block content %}
+<div class="container main-content">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card shadow">
+                <div class="card-body p-5">
+                    <h2 class="text-center page-title mb-4">Artisan Login</h2>
+                    <form method="POST">
+                        <div class="mb-3">
+                            <label for="email" class="form-label">Email</label>
+                            <input type="email" class="form-control" id="email" name="email" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="password" class="form-label">Password</label>
+                            <input type="password" class="form-control" id="password" name="password" required>
+                        </div>
+                        <button type="submit" class="btn btn-primary-custom w-100">Login</button>
+                    </form>
+                    <p class="text-center mt-3">
+                        New artisan? <a href="{{ url_for('new_artisan') }}">Register here</a>
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

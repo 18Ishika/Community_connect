@@ -1,0 +1,206 @@
+{% extends "base.html" %}
+
+{% block title %}{{ artisan.name }} - KalaMitra{% endblock %}
+
+{% block extra_css %}
+<style>
+    .star-rating {
+        font-size: 1.5rem;
+        color: #ddd;
+        cursor: pointer;
+    }
+    .star-rating .star {
+        display: inline-block;
+        transition: color 0.2s;
+    }
+    .star-rating .star.filled {
+        color: #ffc107;
+    }
+    .star-rating .star:hover,
+    .star-rating .star:hover ~ .star {
+        color: #ffc107;
+    }
+    .rating-stars {
+        color: #ffc107;
+    }
+    .rating-display {
+        font-size: 1.2rem;
+        color: #ffc107;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container main-content">
+    <!-- Artisan Profile Header -->
+    <div class="row mb-4">
+        <div class="col-md-12">
+            <div class="card shadow">
+                <div class="card-body p-4">
+                    <div class="row">
+                        <div class="col-md-3 text-center">
+                            <img src="{{ artisan.image_url or 'https://via.placeholder.com/200?text=No+Image' }}" 
+                                 alt="{{ artisan.name }}" class="img-fluid rounded-circle" 
+                                 style="width: 180px; height: 180px; object-fit: cover; border: 4px solid #d18f6e;">
+                        </div>
+                        <div class="col-md-9">
+                            <h2 class="page-title mb-2">{{ artisan.name }}</h2>
+                            <div class="mb-2">
+                                <span class="rating-display">
+                                    {% for i in range(5) %}
+                                        {% if i < artisan.rating|int %}
+                                            ★
+                                        {% elif i < artisan.rating %}
+                                            ★
+                                        {% else %}
+                                            ☆
+                                        {% endif %}
+                                    {% endfor %}
+                                </span>
+                                <strong class="ms-2">{{ "%.1f"|format(artisan.rating) }}/5</strong>
+                                <small class="text-muted ms-2">({{ artisan.total_ratings }} ratings)</small>
+                            </div>
+                            <p class="text-secondary mb-2"><strong>Craft:</strong> {{ artisan.craft_type }}</p>
+                            <p class="text-muted mb-2"><strong>Location:</strong> {{ artisan.location or 'Not specified' }}</p>
+                            <p class="text-muted mb-3"><strong>Contact:</strong> {{ artisan.contact or 'Not specified' }}</p>
+                            <p class="mb-3">{{ artisan.bio or 'No bio available' }}</p>
+                            <div class="d-flex gap-2">
+                                {% if session.user_id and session.user_type == 'user' %}
+                                    <a href="{{ url_for('start_chat', artisan_id=artisan.id) }}" 
+                                       class="btn btn-create">💬 Chat with Artisan</a>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Products Section -->
+    <div class="mb-5">
+        <h3 class="mb-3">Products by {{ artisan.name }}</h3>
+        <div class="row g-4">
+            {% for product in products %}
+            <div class="col-md-6 col-lg-4">
+                <div class="card h-100 shadow-sm">
+                    <img src="{{ product.image_url or 'https://via.placeholder.com/300x200?text=No+Image' }}" 
+                        class="card-img-top" alt="{{ product.name }}" style="height: 200px; object-fit: cover;">
+                    <div class="card-body">
+                        <h5 class="card-title">{{ product.name }}</h5>
+                        <p class="card-text"><small>{{ product.description[:100] }}{% if product.description|length > 100 %}...{% endif %}</small></p>
+                        <p class="text-primary fw-bold mb-2">₹{{ "%.2f"|format(product.price) }}</p>
+                        <p class="text-muted mb-3"><small><strong>Category:</strong> {{ product.category }}</small></p>
+                        {% if session.user_id and session.user_type == 'user' %}
+                            {% if product.id in wishlist_product_ids %}
+                                <a href="{{ url_for('remove_from_wishlist', product_id=product.id) }}" 
+                                   class="btn btn-danger btn-sm w-100">💔 Remove from Wishlist</a>
+                            {% else %}
+                                <a href="{{ url_for('add_to_wishlist', product_id=product.id) }}" 
+                                   class="btn btn-primary-custom btn-sm w-100">❤️ Add to Wishlist</a>
+                            {% endif %}
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+
+        {% if not products %}
+        <div class="text-center mt-5">
+            <div class="card mx-auto" style="max-width: 400px;">
+                <div class="card-body">
+                    <h5 class="text-muted">No products available yet</h5>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+
+    <!-- Rating Section -->
+    {% if session.user_id and session.user_type == 'user' %}
+    <div class="mb-5">
+        <h3 class="mb-3">Rate this Artisan</h3>
+        <div class="card shadow-sm">
+            <div class="card-body">
+                <form method="POST" action="{{ url_for('rate_artisan', artisan_id=artisan.id) }}">
+                    <div class="mb-3">
+                        <label class="form-label">
+                            {% if user_rating %}
+                                Your Rating: Update your rating below
+                            {% else %}
+                                Click on the stars to rate
+                            {% endif %}
+                        </label>
+                        <div class="star-rating" id="starRating">
+                            <span class="star" data-value="5">★</span>
+                            <span class="star" data-value="4">★</span>
+                            <span class="star" data-value="3">★</span>
+                            <span class="star" data-value="2">★</span>
+                            <span class="star" data-value="1">★</span>
+                        </div>
+                        <input type="hidden" name="rating" id="ratingInput" value="{{ user_rating.rating if user_rating else '0' }}" required>
+                    </div>
+                    <div class="d-flex gap-2">
+                        <button type="submit" class="btn btn-primary-custom">
+                            {% if user_rating %}Update Rating{% else %}Submit Rating{% endif %}
+                        </button>
+                        {% if user_rating %}
+                            <a href="{{ url_for('delete_rating', artisan_id=artisan.id) }}" 
+                               class="btn btn-danger"
+                               onclick="return confirm('Are you sure you want to delete your rating?')">
+                                Delete Rating
+                            </a>
+                        {% endif %}
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+</div>
+
+{% block extra_js %}
+<script>
+    // Star rating functionality
+    document.addEventListener('DOMContentLoaded', function() {
+        const stars = document.querySelectorAll('.star-rating .star');
+        const ratingInput = document.getElementById('ratingInput');
+        let currentRating = parseInt(ratingInput.value) || 0;
+
+        // Set initial rating if exists
+        if (currentRating > 0) {
+            updateStars(currentRating);
+        }
+
+        stars.forEach(star => {
+            star.addEventListener('click', function() {
+                currentRating = parseInt(this.getAttribute('data-value'));
+                ratingInput.value = currentRating;
+                updateStars(currentRating);
+            });
+
+            star.addEventListener('mouseenter', function() {
+                const hoverValue = parseInt(this.getAttribute('data-value'));
+                updateStars(hoverValue);
+            });
+        });
+
+        document.querySelector('.star-rating').addEventListener('mouseleave', function() {
+            updateStars(currentRating);
+        });
+
+        function updateStars(rating) {
+            stars.forEach((star, index) => {
+                const starValue = parseInt(star.getAttribute('data-value'));
+                if (starValue <= rating) {
+                    star.classList.add('filled');
+                } else {
+                    star.classList.remove('filled');
+                }
+            });
+        }
+    });
+</script>
+{% endblock %}
+{% endblock %}

@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+
+{% block title %}User Dashboard - KalaMitra{% endblock %}
+
+{% block content %}
+<div class="container main-content">
+    <div class="row mb-4">
+        <div class="col-md-12">
+            <div class="card shadow">
+                <div class="card-body">
+                    <h2 class="page-title mb-0">Welcome, {{ user.name }}!</h2>
+                    <p class="text-muted">Manage your wishlist and messages</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <h3 class="mb-3">Your Wishlist</h3>
+    <div class="row g-4">
+        {% for product in wishlist_products %}
+        <div class="col-md-6 col-lg-4">
+            <div class="card h-100 shadow-sm">
+                <img src="{{ product.image_url or 'https://via.placeholder.com/300x200?text=No+Image' }}" 
+                    class="card-img-top" alt="{{ product.name }}" style="height: 200px; object-fit: cover;">
+                <div class="card-body">
+                    <h5 class="card-title">{{ product.name }}</h5>
+                    <p class="card-text"><small>{{ product.description[:100] }}...</small></p>
+                    <p class="text-primary fw-bold">₹{{ "%.2f"|format(product.price) }}</p>
+                    <div class="d-flex gap-2">
+                        <a href="{{ url_for('view_artisan_profile', artisan_id=product.artisan_id) }}" 
+                           class="btn btn-outline-primary-custom btn-sm flex-fill">View Artisan</a>
+                        <a href="{{ url_for('remove_from_wishlist', product_id=product.id) }}" 
+                           class="btn btn-danger btn-sm flex-fill">Remove</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+    {% if not wishlist_products %}
+    <div class="text-center mt-5">
+        <div class="card mx-auto" style="max-width: 400px;">
+            <div class="card-body">
+                <h5 class="text-muted">Your wishlist is empty</h5>
+                <p class="text-muted">Explore artisans and add products!</p>
+                <a href="{{ url_for('index') }}" class="btn btn-create">Browse Artisans</a>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}
