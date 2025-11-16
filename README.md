@@ -61,10 +61,19 @@
    👉 [http://127.0.0.1:5000](http://127.0.0.1:5000)
 
 ---
+ 6. Used vs code port feature to use on other devices.
+---
 
 ### 📸 Screenshots
 
-*(Add screenshots here once your UI is ready to make your project presentation-friendly!)*
+<img width="1360" height="655" alt="image" src="https://github.com/user-attachments/assets/f67f29c5-6646-4d15-b0fc-79a670d368cf" />
+<img width="1365" height="642" alt="image" src="https://github.com/user-attachments/assets/11962219-27c8-49f7-862b-9ea13c4c68c3" />
+<img width="1365" height="632" alt="image" src="https://github.com/user-attachments/assets/5535d748-80b4-4043-ab1b-347772c951aa" />
+<img width="1087" height="565" alt="image" src="https://github.com/user-attachments/assets/9c8d710b-81c3-4878-ab51-775b8678d40c" />
+
+
+
+
 
 ---
 
