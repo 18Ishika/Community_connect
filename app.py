@@ -423,6 +423,15 @@ def send_message(chat_id):
     db.session.commit()
     
     return redirect(url_for('chat_view', chat_id=chat_id))
+@app.route('/admin/dashboard')
+def admin_dashboard():
+    secret = request.args.get("key")
+    if secret != "KEY_123":
+        return "Unauthorized", 401
+
+    users = User.query.all()
+    artisans = Artisan.query.all()
+    return render_template('admin_dashboard.html', users=users, artisans=artisans)
 
 if __name__ == '__main__':
     app.run(debug=True)
